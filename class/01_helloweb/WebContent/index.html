@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>helloweb</title>
+</head>
+<body>
+	<h1>helloweb</h1>
+	<p>안녕~~~</p>
+	<hr />
+	
+	<ul>
+		<!-- browser(client) 절대주소 작성시, 반드시 context-path부터 작성할것 (여기서는 web이다)
+		localhost:9090이후를 찾게된다
+		(((((http://localhost:9090/web/servlet/testPerson1.html)))) -->
+		
+		<!-- context path 이후의 경로를 WebContent 폴더에서 찾게된다. -->
+		<li><a href="/web/servlet/testPerson1.html">개취검사 - GET</a></li>
+		<li><a href="/web/servlet/testPerson2.html">개취검사 - jsp</a></li>
+	</ul>
+	
+</body>
+</html>
