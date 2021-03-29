@@ -74,7 +74,6 @@ public class MemberEnrollServlet extends HttpServlet {
 
 		
 		// 3. 업무로직 : memberId로 회원객체를 조회
-//		int result = memberService.insertMember(member);
 		
 		Member member = new Member();
 		
@@ -82,20 +81,17 @@ public class MemberEnrollServlet extends HttpServlet {
 		member.setPassword(password);
 		member.setMemberName(memberName);
 		member.setMemberRole(MemberService.MEMBER_ROLE);
-		member.setBirthday(bday); //Date
+		member.setBirthday(bday);
 		member.setEmail(email);
 		member.setPhone(phone);
 		member.setAddress(address);
 		member.setGender(gender);
-		member.setHobby(hobbies); //String ,로 
+		member.setHobby(hobbies);
 		
 		System.out.println("입력한 회원정보 : " + member);
 		
-		
 		int result = memberService.insertMember(member);
 		System.out.println("result@Enrollservlet = " + result);
-		
-		
 		
 		
 		//회원가입 성공/실패 여부 판단
