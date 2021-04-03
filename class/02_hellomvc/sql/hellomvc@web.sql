@@ -47,11 +47,48 @@ create table member(
 	);
 	insert into member
 	values (
-		'admin', '1234', '관리자', 'A', 'M', to_date('19801010','yyyymmdd'),
+		'admin', '1ARVn2Auq2/WAqx2gNrL+q3RNjAzXpUfCXrzkA6d4Xa22yhRLy4AC50E+6UTPoscbo31nbOoq51gvkuXzJ6B2w==', '관리자', 'A', 'M', to_date('19801010','yyyymmdd'),
 		'admin@naver.com', '01056785678', '서울시 관악구', '게임,독서', default
 	);
+    delete member
+    where member_id = 'admin';
+
 
 commit;
 
 select * from member;
+
+
+-- 페이징
+--1. rownum 행추가시 자동으로 부여되는 no
+select *
+from (
+        select rownum rnum, M.*
+        from (
+                select M.* 
+                from member M
+                order by enroll_date desc
+                ) M
+        )M
+where rnum between 11 and 20;
+
+--2. window함수 row_number
+-- cPage = 1 :  1 ~ 10
+-- cPage = 2 :  11 ~ 20
+-- cPage = 3 :  21 ~ 30
+-- .....
+-- cPage = 10 : 91 ~ 100
+-- cPage = 11 : 101 ~ 110 
+select *
+from (
+        select row_number() over(order by enroll_date desc) rnum,
+                    M.*
+        from member M
+        ) M
+where rnum between 11 and 20;
+
+select count(*)
+from member;
+
+
 
