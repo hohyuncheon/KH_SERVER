@@ -101,8 +101,6 @@ public class MemberService {
 	}
 
 
-
-
 	public int selectMemberCount() {
 		Connection conn = getConnection();
 		int totalContents = memberDao.selectMemberCount(conn);
