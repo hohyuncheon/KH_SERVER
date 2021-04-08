@@ -1,10 +1,7 @@
 package board.model.dao;
 
-import static common.JDBCTemplate.close;
-
 import java.io.FileReader;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,14 +12,13 @@ import java.util.Properties;
 import board.model.exception.BoardException;
 import board.model.vo.Attachment;
 import board.model.vo.Board;
-import member.model.vo.Member;
+import board.model.vo.BoardComment;
 
+import static common.JDBCTemplate.*;
 
 public class BoardDao {
+	
 	private Properties prop = new Properties();
-//	private Board board = new Board();
-	
-	
 	
 	public BoardDao() {
 		//board-query.properties의 내용읽어와서 prop에 저장
@@ -37,36 +33,40 @@ public class BoardDao {
 		}
 		
 	}
-	
+
 	public List<Board> selectList(Connection conn, int start, int end) {
+		List<Board> list = new ArrayList<>();
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
-		List<Board> list = null;
 		String sql = prop.getProperty("selectList");
 		
-		
 		try {
-			//3. PreparedStatement 객체생성(미완성쿼리 = ?가 있는쿼리)
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1,  start);
-			pstmt.setInt(2,  end);
-			//3.1 ?가 있다면 값대입
-			//4. 실행 : DML(executeUpdate) -> int ,   DQL(executeQuery) -> ResultSet 으로 리턴처리.
+			pstmt.setInt(1, start);
+			pstmt.setInt(2, end);
 			rset = pstmt.executeQuery();
-			//4.1 ResultSet을 -> Java객체 옮겨담기
-			list = new ArrayList<>();
 			while(rset.next()) {
-				int no = rset.getInt("no");
-				String title = rset.getString("title");
-				String writer = rset.getString("writer");
-				String content = rset.getString("content");
-				Date regDate = rset.getDate("reg_Date");
-				int readCount = rset.getInt("read_Count");
-//				String attach = rset.getAttachments("attach");
+				Board board = new Board();
+				board.setNo(rset.getInt("no"));
+				board.setTitle(rset.getString("title"));
+				board.setWriter(rset.getString("writer"));
+				board.setContent(rset.getString("content"));
+				board.setRegDate(rset.getDate("reg_date"));
+				board.setReadCount(rset.getInt("read_count"));
 				
-				Board board = new Board(no, title, writer, content, regDate, readCount,null);
+				System.out.println(rset.getInt("attach_no"));
+				//첨부파일이 있는 경우
+				if(rset.getInt("attach_no") != 0) {
+					Attachment attach = new Attachment();
+					attach.setNo(rset.getInt("attach_no"));
+					attach.setBoardNo(rset.getInt("no"));
+					attach.setOriginalFileName(rset.getString("original_filename"));
+					attach.setRenamedFileName(rset.getString("renamed_filename"));
+					attach.setStatus("Y".equals(rset.getString("status")) ? true : false);
+					board.setAttach(attach);
+				}
+				
 				list.add(board);
-				
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -74,28 +74,22 @@ public class BoardDao {
 			close(rset);
 			close(pstmt);
 		}
-		
 		return list;
 	}
-
 
 	public int selectBoardCount(Connection conn) {
 		int totalContents = 0;
 		PreparedStatement pstmt = null;
 		ResultSet rset = null;
-
-		String query = prop.getProperty("selectMemberCount");
-
+		String sql = prop.getProperty("selectBoardCount");
+		
 		try {
-			// 미완성쿼리문을 가지고 객체생성.
-			pstmt = conn.prepareStatement(query);
-			// 쿼리문실행
+			pstmt = conn.prepareStatement(sql);
 			rset = pstmt.executeQuery();
-
-			if (rset.next()) {
+			while(rset.next()) {
 				totalContents = rset.getInt("cnt");
 			}
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			close(rset);
@@ -103,7 +97,6 @@ public class BoardDao {
 		}
 		return totalContents;
 	}
-
 
 	public int insertBoard(Connection conn, Board board) {
 		PreparedStatement pstmt = null;
@@ -152,7 +145,7 @@ public class BoardDao {
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setInt(1, attach.getBoardNo());
-			pstmt.setString(2, attach.getOrginalFileName());
+			pstmt.setString(2, attach.getOriginalFileName());
 			pstmt.setString(3, attach.getRenamedFileName());
 			result = pstmt.executeUpdate();
 		} catch (SQLException e) {
@@ -163,4 +156,179 @@ public class BoardDao {
 		return result;
 		
 	}
+	
+	public Board selectOne(Connection conn, int no) {
+		Board board = null;
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = prop.getProperty("selectOne");
+		try{
+			//미완성쿼리문을 가지고 객체생성.
+			pstmt = conn.prepareStatement(query);
+			//쿼리문미완성
+			pstmt.setInt(1, no);
+			//쿼리문실행
+			//완성된 쿼리를 가지고 있는 pstmt실행(파라미터 없음)
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()){
+				board = new Board();
+				board.setNo(rset.getInt("no"));
+				board.setTitle(rset.getString("title"));
+				board.setWriter(rset.getString("writer"));
+				board.setContent(rset.getString("content"));
+				board.setRegDate(rset.getDate("reg_date"));
+				board.setReadCount(rset.getInt("read_count"));
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			close(rset);
+			close(pstmt);
+		}
+		return board;
+	}
+	
+	public Attachment selectOneAttachment(Connection conn, int no) {
+		Attachment attach = null;
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		
+		String query = prop.getProperty("selectOneAttachment");
+		try{
+			//미완성쿼리문을 가지고 객체생성.
+			pstmt = conn.prepareStatement(query);
+			//쿼리문미완성
+			pstmt.setInt(1, no);
+			//쿼리문실행
+			//완성된 쿼리를 가지고 있는 pstmt실행(파라미터 없음)
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()){
+				attach = new Attachment();
+				attach.setNo(rset.getInt("no"));
+				attach.setBoardNo(rset.getInt("board_no"));
+				attach.setOriginalFileName(rset.getString("original_filename"));
+				attach.setRenamedFileName(rset.getString("renamed_filename"));
+				attach.setStatus("Y".equals(rset.getString("status")) ?  true : false);
+			}
+		}catch(Exception e){
+			throw new BoardException("첨부파일 조회 오류", e);
+		}finally{
+			close(rset);
+			close(pstmt);
+		}
+		return attach;
+	}
+
+	public int deleteBoard(Connection conn, int no) {
+		PreparedStatement pstmt = null;
+		int result = 0;
+		String sql = prop.getProperty("deletBoard");
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, no);
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new BoardException("게시물 삭제 오류", e);
+		} finally {
+			close(pstmt);
+		}
+		return result;
+	}
+
+	public int updateBoard(Connection conn, Board board) {
+		PreparedStatement pstmt = null;
+		int result = 0;
+		String sql = prop.getProperty("updateBoard");
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, board.getTitle());
+			pstmt.setString(2, board.getContent());
+			pstmt.setInt(3, board.getNo());
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new BoardException("게시물 수정 오류", e);
+		} finally {
+			close(pstmt);
+		}
+		
+		return result;
+	}
+
+	public int deleteAttachment(Connection conn, String attachNo) {
+		PreparedStatement pstmt = null;
+		int result = 0;
+		String sql = prop.getProperty("deleteAttachment");
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, attachNo);
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new BoardException("첨부파일 삭제 오류", e);
+		} finally {
+			close(pstmt);
+		}
+		return result;
+	}
+
+	public int insertBoardComment(Connection conn, BoardComment bc) {
+		PreparedStatement pstmt = null;
+		int result = 0;
+		String sql = prop.getProperty("insertBoardComment");
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, bc.getCommentLevel());
+			pstmt.setString(2, bc.getWriter());
+			pstmt.setString(3, bc.getContent());
+			pstmt.setInt(4, bc.getBoardNo());
+//			pstmt.setInt(5, bc.getCommentRef() == 0 ? null : bc.getCommentRef());
+			pstmt.setObject(5, bc.getCommentRef() == 0 ? null : bc.getCommentRef());
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new BoardException("댓글 등록 오류", e);
+		} finally {
+			close(pstmt);
+		}
+		return result;
+	}
+
+	public List<BoardComment> selectBoardCommentList(Connection conn, int no) {
+		List<BoardComment> commentList = new ArrayList<>();
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+		String sql = prop.getProperty("selectBoardCommentList");
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, no);
+			
+			rset = pstmt.executeQuery();
+			while(rset.next()) {
+				BoardComment bc = new BoardComment();
+				bc.setNo(rset.getInt("no"));
+				bc.setCommentLevel(rset.getInt("comment_level"));
+				bc.setWriter(rset.getString("writer"));
+				bc.setContent(rset.getString("content"));
+				bc.setBoardNo(rset.getInt("board_no"));
+				bc.setCommentRef(rset.getInt("comment_ref"));
+				bc.setRegDate(rset.getDate("reg_date"));
+				commentList.add(bc);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close(rset);
+			close(pstmt);
+		}
+		return commentList;
+	}
+
 }
+
+
+
+
+

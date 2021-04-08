@@ -85,7 +85,7 @@
 </section>
 <script>
 /**
- * 중복검사 이후 다시 아이디를 변경하는 것을 방지
+ * 중복검사 이후 다시 아이디를 변경하는 것을 방지.
  */
 $("#memberId_").change(function(){
 	$("#idValid").val(0);

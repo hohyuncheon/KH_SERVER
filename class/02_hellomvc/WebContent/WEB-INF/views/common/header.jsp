@@ -17,7 +17,7 @@
 		for(Cookie c : cookies){
 			String name = c.getName();
 			String value = c.getValue();
-			//System.out.println(name + " : " + value);
+			System.out.println(name + " : " + value);
 			if("saveId".equals(name))
 				saveId = value;
 		}
@@ -102,7 +102,8 @@ $(function(){
 					</tr>
 					<tr>
 						<td> 
-							<input type="button" value="내정보보기" onclick="location.href='<%= request.getContextPath() %>/member/memberView';"/>
+							<input type="button" value="내정보보기" 
+								onclick="location.href='<%= request.getContextPath() %>/member/memberView';" />
 							<input type="button" value="로그아웃" 
 								onclick="location.href='<%= request.getContextPath() %>/member/logout';" />
 						</td>
@@ -118,11 +119,11 @@ $(function(){
 				<ul class="main-nav">
 					<li class="home"><a href="<%= request.getContextPath() %>">Home</a></li>
 					<li class="notice"><a href="#">공지사항</a></li>
-					<li class="board"><a href="<%=request.getContextPath() %>/board/boardList">게시판</a></li>
-					<%--관리자 로그인시에만 노출되는 부분 --%>
+					<li class="board"><a href="<%= request.getContextPath() %>/board/boardList">게시판</a></li>
+					<%-- 관리자로그인시에만 관리자메뉴 노출 --%>
 					<% if(loginMember != null && MemberService.ADMIN_ROLE.equals(loginMember.getMemberRole())){ %>
-					<li class="members"><a href="<%=request.getContextPath() %>/admin/memberList">회원관리</a></li>
-					<% }%>
+					<li class="members"><a href="<%= request.getContextPath() %>/admin/memberList">회원관리</a></li>
+					<% } %>
 				</ul>
 			</nav>
 			<!-- 메인메뉴 끝-->

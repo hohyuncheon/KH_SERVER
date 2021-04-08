@@ -27,7 +27,6 @@ import member.model.vo.Member;
  * 		5. pageStart ~ pageEnd pageNo의 범위
  * 
  */
-
 @WebServlet("/admin/memberList")
 public class AdminMemberListServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -66,8 +65,6 @@ public class AdminMemberListServlet extends HttpServlet {
 					totalContents,
 					url
 				);
-		
-		
 		
 		//4. jsp에 html응답메세지 작성 위임
 		request.setAttribute("pageBar", pageBar);

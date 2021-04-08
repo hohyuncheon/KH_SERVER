@@ -14,10 +14,12 @@ import javax.servlet.http.HttpServletResponse;
 public class BoardFormServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	//연결전용
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.getRequestDispatcher("/WEB-INF/views/board/boardForm.jsp")
-		.forward(request, response);
+			   .forward(request, response);
 	}
 
 }

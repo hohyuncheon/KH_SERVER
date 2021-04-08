@@ -130,4 +130,15 @@ public class MvcUtils {
 		return pageBar.toString();
 	}
 
+
+	public static String convertLineFeedToBr(String content) {
+		return content.replaceAll("\\n", "<br/>");
+	}
+
+
+	public static String escapeHtml(String str) {
+		return str.replaceAll("<", "&lt;")
+				  .replaceAll(">", "&gt;");
+	}
+
 }

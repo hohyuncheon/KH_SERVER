@@ -47,7 +47,6 @@ function setMemberId(){
 /**
  * 아이디 중복 검사함수
  */
- 
 function checkIdDuplicate(){
 	var $memberId = $("[name=memberId]");
 	if(/^[a-zA-Z0-9_]{4,}$/.test($memberId.val()) == false){

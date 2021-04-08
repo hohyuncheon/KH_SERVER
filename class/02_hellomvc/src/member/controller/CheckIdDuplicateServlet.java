@@ -25,7 +25,7 @@ public class CheckIdDuplicateServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//1. 사용자입력값 처리
 		String memberId = request.getParameter("memberId");
-		System.out.println("memberId@servlet =" + memberId);
+		System.out.println("memberId@servlet = " + memberId);
 		
 		//2. 업무로직 : 해당 id를 db에서 조회
 		Member member = new MemberService().selectOne(memberId);

@@ -1,4 +1,4 @@
-<%@page import="board.model.vo.Board"%>
+﻿<%@page import="board.model.vo.Board"%>
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
@@ -9,10 +9,11 @@
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/board.css" />
 <section id="board-container">
 	<h2>게시판 </h2>
-	
-	<%if(loginMember!=null){ %>
-	<input type="button" value="글쓰기" id="btn-add" onclick="location.href='<%= request.getContextPath() %>/board/boardForm';"/>
-	<%} %>
+	<% 	if(loginMember != null){ %>
+	<input 
+		type="button" value="글쓰기" id="btn-add" 
+		onclick="location.href='<%= request.getContextPath() %>/board/boardForm';"/>
+	<% 	} %>
 	<table id="tbl-board">
 		<tr>
 			<th>번호</th>
@@ -28,12 +29,14 @@
 	%>	
 		<tr>
 			<td><%= b.getNo() %></td>
-			<td><%= b.getTitle() %></td>
+			<td>
+				<a href="<%= request.getContextPath() %>/board/boardView?no=<%= b.getNo() %>"><%= b.getTitle() %></a>
+			</td>
 			<td><%= b.getWriter() %></td>
 			<td><%= b.getRegDate() %></td>
 			<td>
 				<% if(b.getAttach() != null){ %>
-				<img src="<%= request.getContextPath() %>/images/file.png" alt="" />
+				<img src="<%= request.getContextPath() %>/images/file.png" width="16px"/>
 				<% } %>
 			</td>
 			<td><%= b.getReadCount() %></td>

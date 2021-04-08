@@ -2,13 +2,14 @@ package board.model.vo;
 
 import java.sql.Date;
 
-/*
+/**
  * 
- * VO객체 ------ 행(레코드)
- * 필드 	------ 컬럼
- * 
+ * VO객체  ------- 행(레코드)
+ * 필드      ------- 컬럼  
+ *
  */
 public class Board {
+	
 	private int no;
 	private String title;
 	private String writer;
@@ -32,6 +33,7 @@ public class Board {
 		this.readCount = readCount;
 		this.attach = attach;
 	}
+
 	public int getNo() {
 		return no;
 	}
@@ -74,13 +76,12 @@ public class Board {
 	public void setAttach(Attachment attach) {
 		this.attach = attach;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Board [no=" + no + ", title=" + title + ", writer=" + writer + ", content=" + content + ", regDate="
 				+ regDate + ", readCount=" + readCount + ", attach=" + attach + "]";
 	}
-	
 	
 	
 }
