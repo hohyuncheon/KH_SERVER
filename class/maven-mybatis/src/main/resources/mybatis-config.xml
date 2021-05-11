@@ -3,6 +3,13 @@
   PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
+	
+	<!-- regdate null 떠서 넣은 값 -->
+	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="true"/>
+	</settings>
+	
+	
   <typeAliases>
   	<typeAlias type="com.kh.mybatis.student.model.vo.Student" alias="student"/>
   </typeAliases>
@@ -19,5 +26,6 @@
   </environments>
   <mappers>
     <mapper resource="mapper/student/student-mapper.xml"/>
+    <mapper resource="mapper/emp/emp-mapper.xml"/>
   </mappers>
 </configuration>
